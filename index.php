@@ -9,6 +9,10 @@ App::get("/", function () {
     include("./client/dist/index.html");
 });
 
+App::get("/cat", function(){
+    
+});
+
 App::post("/cat", function(){
 
 }); 
