@@ -1,23 +1,38 @@
-
-
+import { useState, useEffect } from "react";
+import Prods from "./components/products";
+import Create from "./components/create";
 
 function App() {
 
-  async function createLPS(){
-    
+  const [prods, setProds] = useState([]);
+
+  useEffect(_ => { getData() }, []);
+
+
+  async function getData() {
+    const res = await fetch("cats.json");
+    const data = await res.json();
+    setProds(_ => data);
   }
 
-  async function deleteLPS(){
-    
-  }
-
-  async function updateLPS(){
+  async function createLPS() {
 
   }
 
-  return ( 
-    <h2>REACT CLIENT 13:18</h2>
-   );
+  async function deleteLPS() {
+
+  }
+
+  async function updateLPS() {
+
+  }
+
+  return (
+    <>
+      <Create setProds={setProds} ></Create>
+      <Prods prods={prods} setProds={setProds}></Prods>
+    </>
+  );
 }
 
 export default App;
