@@ -8,6 +8,8 @@ function Prod({prod, setProds}){
     }
 
     function deleteProd(){
+        fetch(`http://localhost:5173/client/dist/cats/delete/${prod.id}`,
+            {method: "POST"})
         setProds(_=>_.filter(p=>p.id!=prod.id))
     }
 
@@ -20,10 +22,19 @@ function Prod({prod, setProds}){
         const price = event.target.price.value.trim().replaceAll(/\s+/g, "_") || prod.price 
 
         newProd = {id, toy_type, color, price}
+
+        fetch("http://localhost:5173/client/dist/cats/update", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(newProd)
+        })
+
         setProds(_=>_.map(p=>{
             if(p.id == prod.id) return {...p, ...prod}
             return p; 
         }))
+
+        toggleEdit(); 
     }
 
     return (

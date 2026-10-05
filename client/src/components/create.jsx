@@ -3,7 +3,7 @@ function Create({ setProds }) {
     function createProd(event){
         event.preventDefault(); 
         const newProd = {
-            id: Math.floor(Math.random(1110000, 99999999) * 1000),
+            id: "s"+Math.floor(Math.random() * 1000),
             toy_number: event.target.toy_number.value,
             color: event.target.color.value,
             toy_type: event.target.toy_type.value,
@@ -11,6 +11,12 @@ function Create({ setProds }) {
             generation: event.target.generation.value,
             price: event.target.price.value 
         }
+
+        fetch("http://localhost:5173/client/dist/cats", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(newProd)
+        }); 
         setProds(prev=>[...prev, newProd]); 
     }
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import Prods from "./components/products";
+import Products from "./components/products";
 import Create from "./components/create";
 
 function App() {
@@ -8,29 +8,16 @@ function App() {
 
   useEffect(_ => { getData() }, []);
 
-
   async function getData() {
-    const res = await fetch("cats.json");
+    const res = await fetch("http://localhost:5173/client/dist/");
     const data = await res.json();
     setProds(_ => data);
-  }
-
-  async function createLPS() {
-
-  }
-
-  async function deleteLPS() {
-
-  }
-
-  async function updateLPS() {
-
   }
 
   return (
     <>
       <Create setProds={setProds} ></Create>
-      <Prods prods={prods} setProds={setProds}></Prods>
+      <Products prods={prods} setProds={setProds}></Products>
     </>
   );
 }

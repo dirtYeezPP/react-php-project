@@ -159,3 +159,191 @@ men skit i detdär
 
 ## gay 
 
+iden är att fetch ska hämtas data en gång från servern
+route på servern som hämtar från filen
+(inte från json direkt)
+servern måste ha en route som delar ut data 
+den kan komma varifrån som helst
+när vi sen laddar ner det hamnar det i vår lokal state, 
+state var. 
+
+i create gör vi fetch med post
+data till server
+och tanken är att vi bara ska få den ny skapade datan tillbaka
+bara efter att vi får svar från servern, att allt har gått bra. 
+
+då kan vi ta den datan och påverka vår state i klient app. 
+
+
+samma sak med update, put request, 
+och samma sak där får vi reda på att objektek har ändrats
+och då kan vi göra öndringarna lokala på klienten
+
+samma på delete, få tillbaka true eller false, ingen 
+nydata, men state måste ändå ändras. 
+är det borta på servern måste det bort fårn klienten as well.
+
+enkelt när man gjort det och har fattat det
+men var konsekventa med vad n skickar till klienten
+hela tiden skicka json tillbaks till klienten
+
+han ska visa en s.. nej det ska han inte gg 
+inte mycket data manipulation i routesen
+utan i separat filer liksom
+vi ska kunna byta till en klass som jobbar mes myswl 
+sen så ha det modulärt okej. 
+
+
+
+## ai help....
+``` php
+// Allow Vite (usually localhost:5173) to communicate with PHP
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type");
+
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') { exit; } // Handles Vite's preflight requests
+
+// READ ALL
+App::get("/cats", function(){
+    echo file_get_contents('cats.json');
+});
+
+// CREATE
+App::post("/cats", function(){
+    $newCat = json_decode(file_get_contents('php://input'), true);
+    $cats = json_decode(file_get_contents('cats.json'), true);
+    $cats[] = $newCat;
+    file_put_contents('cats.json', json_encode($cats, JSON_PRETTY_PRINT));
+});
+
+// DELETE
+App::post("/cats/delete", function(){
+    $id = $_GET['id'];
+    $cats = json_decode(file_get_contents('cats.json'), true);
+    $cats = array_filter($cats, fn($c) => $c['id'] != $id);
+    // array_values resets the array keys so it saves as a JSON array, not an object
+    file_put_contents('cats.json', json_encode(array_values($cats), JSON_PRETTY_PRINT)); 
+});
+
+// UPDATE
+App::post("/cats/update", function(){
+    $updatedCat = json_decode(file_get_contents('php://input'), true);
+    $cats = json_decode(file_get_contents('cats.json'), true);
+    foreach($cats as &$cat) {
+        if($cat['id'] == $updatedCat['id']) {
+            $cat = array_merge($cat, $updatedCat);
+        }
+    }
+    file_put_contents('cats.json', json_encode($cats, JSON_PRETTY_PRINT));
+});
+```
+
+
+``` jsx 
+// app.jsx 
+async function getData() {
+    const res = await fetch("http://localhost:8000/cats"); // Point to PHP server
+    const data = await res.json();
+    setProds(_ => data);
+  }
+
+
+
+
+
+  // create.jsx 
+  function createProd(event){
+        event.preventDefault(); 
+        const newProd = {
+            id: "s_" + Math.floor(Math.random() * 1000), // Matched your JSON ID format
+            toy_number: event.target.toy_number.value,
+            color: event.target.color.value,
+            toy_type: event.target.toy_type.value,
+            publication_year: event.target.publication_year.value,
+            generation: event.target.generation.value,
+            price: event.target.price.value 
+        }
+
+        // Send to PHP
+        fetch("http://localhost:8000/cats", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newProd)
+        });
+
+        // Update UI immediately 
+        setProds(prev=>[...prev, newProd]); 
+    }
+
+
+    // product.jsx 
+    function deleteProd(){
+        // Send delete request to PHP
+        fetch(`http://localhost:8000/cats/delete?id=${prod.id}`, { method: "POST" });
+        // Remove from UI
+        setProds(_=>_.filter(p=>p.id!=prod.id));
+    }
+
+    function updateProd(event){
+        event.preventDefault();
+
+        const id = prod.id 
+        const toy_type = event.target.toy_type.value.trim().replaceAll(/\s+/g, "_") || prod.toy_type
+        const color = event.target.color.value.trim().replaceAll(/\s+/g, "_") || prod.color 
+        const price = event.target.price.value.trim().replaceAll(/\s+/g, "_") || prod.price 
+
+        const newProd = {id, toy_type, color, price};
+
+        // Send update to PHP
+        fetch("http://localhost:8000/cats/update", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newProd)
+        });
+
+        setProds(_=>_.map(p=>{
+            // Fixed bug: spread newProd, not prod
+            if(p.id == prod.id) return {...p, ...newProd}; 
+            return p; 
+        }));
+        
+        toggleEdit(); // Closes the form automatically after saving
+    }
+
+
+    //3. How to run them togetherBecause client and server are separated, you need two terminals open to run both simultaneously:Terminal 1 (PHP Server): Open a terminal in your root folder (where cats.json and router.php live) and run:php -S localhost:8000Terminal 2 (Vite Server): Open a second terminal, navigate into your client folder, and run:
+npm run dev   Now, when you interact with the Vite app in your browser, it will instantly update the UI while successfully saving the changes directly to cats.json behind the scenes.
+
+
+
+
+
+$jsonFile = __DIR__ . '/cats.json';
+
+// READ
+App::get("/cats", function() use ($jsonFile) {
+    echo file_get_contents($jsonFile);
+});
+
+// CREATE
+App::post("/cats", function() use ($jsonFile) {
+    $newCat = json_decode(file_get_contents('php://input'), true);
+    
+    // Fallback in case the file is empty or broken
+    $fileData = file_get_contents($jsonFile);
+    $cats = $fileData ? json_decode($fileData, true) : [];
+    
+    $cats[] = $newCat;
+    file_put_contents($jsonFile, json_encode($cats, JSON_PRETTY_PRINT));
+});
+
+
+    $postData = json_decode(file_get_contents('php://input'), true);
+    $cats = json_decode(file_get_contents('cats.json'), true); 
+    $cats[] = $postData; 
+    $postData['id'] = "s".uniqid();
+    file_put_contents('cats.json', json_encode($cats, JSON_PRETTY_PRINT ));
+    header("Content-Type:application/json"); // både i server & klient 
+    echo json_encode($postData);
+```
