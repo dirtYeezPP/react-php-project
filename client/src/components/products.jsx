@@ -1,9 +1,9 @@
 import Prod from "./product";
 
-export default function Products({prods, setProds}){
+export default function Products({ products, setProds }) {
     return (
         <div className="prods">
-            {prods.map(p=>(
+            {products.map(p => (
                 <Prod key={p.id} prod={p} setProds={setProds}></Prod>
             ))}
         </div>

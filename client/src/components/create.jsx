@@ -12,7 +12,7 @@ function Create({ setProds }) {
             price: event.target.price.value 
         }
 
-        fetch("http://localhost:5173/client/dist/cats", {
+        fetch("http://localhost:5173/cats", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(newProd)

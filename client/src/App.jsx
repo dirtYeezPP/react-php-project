@@ -4,12 +4,12 @@ import Create from "./components/create";
 
 function App() {
 
-  const [prods, setProds] = useState([]);
+  const [products, setProds] = useState([]);
 
   useEffect(_ => { getData() }, []);
 
   async function getData() {
-    const res = await fetch("http://localhost:5173/client/dist/");
+    const res = await fetch("http://localhost:5173/");
     const data = await res.json();
     setProds(_ => data);
   }
@@ -17,7 +17,7 @@ function App() {
   return (
     <>
       <Create setProds={setProds} ></Create>
-      <Products prods={prods} setProds={setProds}></Products>
+      <Products products={products} setProds={setProds}></Products>
     </>
   );
 }
