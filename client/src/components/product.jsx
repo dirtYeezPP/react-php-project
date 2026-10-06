@@ -33,7 +33,7 @@ function Prod({ prod, setProds }) {
         })
 
         setProds(_ => _.map(p => {
-            if (p.id == prod.id) return { ...p, ...prod }
+            if (p.id == prod.id) return { ...p, ...uProd }
             return p;
         }))
 

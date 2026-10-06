@@ -3,7 +3,7 @@ function Create({ setProds }) {
     function createProd(event){
         event.preventDefault(); 
         const newProd = {
-            id: "s"+Math.floor(Math.random() * 1000),
+            id: "s_"+Math.floor(Math.random() * 1000),
             toy_number: event.target.toy_number.value,
             color: event.target.color.value,
             toy_type: event.target.toy_type.value,
