@@ -9,7 +9,7 @@ function App() {
   useEffect(_ => { getData() }, []);
 
   async function getData() {
-    const res = await fetch("http://localhost:5173/");
+    const res = await fetch("/cats");
     const data = await res.json();
     setProds(_ => data);
   }

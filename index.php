@@ -15,6 +15,7 @@ App::get("/", function () {
 });
 
 App::get("/cats", function () use ($myfuckingballs) {
+    header('Content-Type: application/json');
     echo file_get_contents($myfuckingballs);
 });
 
@@ -27,6 +28,7 @@ App::post("/cats", function () use ($myfuckingballs) {
 
     $cats[] = $newCat;
     file_put_contents($myfuckingballs, json_encode($cats, JSON_PRETTY_PRINT));
+    // header("http://localhost:5173/cats");
 });
 
 App::put("/cats", function () {});

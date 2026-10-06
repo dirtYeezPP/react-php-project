@@ -342,7 +342,7 @@ App::post("/cats", function() use ($jsonFile) {
     $postData = json_decode(file_get_contents('php://input'), true);
     $cats = json_decode(file_get_contents('cats.json'), true); 
     $cats[] = $postData; 
-    $postData['id'] = "s".uniqid();
+    $postData['id'] = "s_".uniqid();
     file_put_contents('cats.json', json_encode($cats, JSON_PRETTY_PRINT ));
     header("Content-Type:application/json"); // både i server & klient 
     echo json_encode($postData);
