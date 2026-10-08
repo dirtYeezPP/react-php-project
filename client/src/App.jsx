@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Products from "./components/products";
 import Create from "./components/create";
+import Login from "./components/login";
 
 function App() {
 
@@ -16,6 +17,7 @@ function App() {
 
   return (
     <>
+      <Login></Login>
       <Create setProds={setProds} ></Create>
       <Products products={products} setProds={setProds}></Products>
     </>

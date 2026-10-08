@@ -3,6 +3,8 @@ header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0", true);
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache", true);
 
+session_start(['cookie_httponly' => true, 'cookie_samesite' => 'Lax']);
+
 require_once("router.php");
 $myfuckingballs = __DIR__ . '/cats.json';
 
