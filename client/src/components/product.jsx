@@ -8,9 +8,12 @@ function Prod({ prod, setProds }) {
     }
 
     function deleteProd() {
-        fetch(`/cats/delete/${prod.id}`,
-            { method: "POST" })
-        setProds(_ => _.filter(p => p.id != prod.id))
+        const id = prod.id 
+        fetch('/cats/'+id,
+            { method: "DELETE",
+                // body: JSON.stringify(id)
+            })
+        setProds(_ => _.filter(p => p.id != id))
     }
 
     function updateProd(event) {
@@ -26,8 +29,8 @@ function Prod({ prod, setProds }) {
 
         const uProd = { id, toy_number, color, toy_type, publication_year, generation, price }
 
-        fetch("/cats/update", {
-            method: "POST",
+        fetch("/cats", {
+            method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(uProd)
         })

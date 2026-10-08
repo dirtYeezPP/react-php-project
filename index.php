@@ -28,9 +28,16 @@ App::post("/cats", function () use ($myfuckingballs) {
 
     $cats[] = $newCat;
     file_put_contents($myfuckingballs, json_encode($cats, JSON_PRETTY_PRINT));
-    // header("http://localhost:5173/cats");
 });
 
-App::put("/cats", function () {});
+App::put("/cats", function () use ($myfuckingballs) {
+    $fileData = file_get_contents($myfuckingballs); 
+    $cats = $fileData ? json_decode($fileData, true) : []; 
 
-App::delete("/cats", function () {});
+});
+
+App::delete('/cats/$id', function ($id) use ($myfuckingballs) {
+    $cats = json_decode(file_get_contents($myfuckingballs), true);
+    $filtCats = array_filter($cats, fn($c) => $c['id'] != $id);
+    file_put_contents($myfuckingballs, json_encode(array_values($filtCats), JSON_PRETTY_PRINT)); 
+});

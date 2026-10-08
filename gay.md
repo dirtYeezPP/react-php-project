@@ -195,7 +195,7 @@ sen så ha det modulärt okej.
 
 
 
-## ai help....
+## ai help.... 
 ``` php
 // Allow Vite (usually localhost:5173) to communicate with PHP
 header("Access-Control-Allow-Origin: *");
@@ -346,4 +346,209 @@ App::post("/cats", function() use ($jsonFile) {
     file_put_contents('cats.json', json_encode($cats, JSON_PRETTY_PRINT ));
     header("Content-Type:application/json"); // både i server & klient 
     echo json_encode($postData);
+```
+
+## ABANDONED CODE & IDEAS 
+
+``` php
+patch("/cats", function () use($pdo, $userId) {
+    loginRequired();
+    parse_str(file_get_contents('php://input'), $_PATCH);
+    $request = ["id" => $_PATCH['id'] ?? null, "name" => $_PATCH['name'] ?? null, "breed" => $_PATCH['breed'] ?? null];
+
+    $sqlPramValues = array_filter($request, function ($value) {
+        return !empty($value);
+    });
+
+    if(count($sqlPramValues) > 1 && isset($sqlPramValues['id'])) {
+        $sql = "UPDATE cattos SET ";
+        $setClauses = []; // clause is name = "luffy" can be called columnsToChange
+
+        foreach($sqlPramValues as $field => $value) {
+            if($field=='id') continue;
+            $setClauses[] = "$field = :$field";
+        }
+
+        $sql .= implode(', ', $setClauses);
+        $sql .= " WHERE id = :id AND postedById = :postedById";
+
+        $sqlPramValues['postedById'] = $userId;
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($sqlPramValues);
+
+        if($stmt->rowCount() === 0){
+            sendErrorPath('ERR_FORBIDDEN');
+            return;
+        }
+    }
+
+    header("Loco: /cats"); //GÖR PROLLY INGENTING!!!!
+    echo "sauces";
+});
+```
+
+``` json
+[
+    {
+        "id": "s_01",
+        "toy_number": "#19",
+        "color": "Light brown and cream with green eyes",
+        "toy_type": "Shorthair Cat",
+        "publication_year": 2005,
+        "generation": "Generation 2",
+        "price": "$60.00"
+    },
+    {
+        "id": "s_02",
+        "toy_number": "#64",
+        "color": "Solid white with blue eyes and pink inner ears",
+        "toy_type": "Shorthair Cat",
+        "publication_year": 2005,
+        "generation": "Generation 2",
+        "price": "$65.00"
+    },
+    {
+        "id": "s_03",
+        "toy_number": "#138",
+        "color": "Grey and white with blue eyes",
+        "toy_type": "Shorthair Cat",
+        "publication_year": 2005,
+        "generation": "Generation 2",
+        "price": "$30.00"
+    },
+    {
+        "id": "s_04",
+        "toy_number": "#143",
+        "color": "White with light brown calico patches and blue eyes",
+        "toy_type": "Persian Cat",
+        "publication_year": 2005,
+        "generation": "Generation 2",
+        "price": "$12.00"
+    },
+    {
+        "id": "s_05",
+        "toy_number": "#271",
+        "color": "Pastel pink with purple eyes",
+        "toy_type": "Persian Cat",
+        "publication_year": 2006,
+        "generation": "Generation 2",
+        "price": "$10.00"
+    },
+    {
+        "id": "s_06",
+        "toy_number": "#339",
+        "color": "Orange tabby and white with amber eyes",
+        "toy_type": "Shorthair Cat",
+        "publication_year": 2006,
+        "generation": "Generation 2",
+        "price": "$70.00"
+    },
+    {
+        "id": "s_07",
+        "toy_number": "#391",
+        "color": "Medium grey with dark grey tabby stripes and teal eyes",
+        "toy_type": "Shorthair Cat",
+        "publication_year": 2007,
+        "generation": "Generation 2",
+        "price": "$75.00"
+    },
+    {
+        "id": "s_08",
+        "toy_number": "#468",
+        "color": "White with purple and blue floral decals",
+        "toy_type": "Shorthair Cat",
+        "publication_year": 2007,
+        "generation": "Generation 2",
+        "price": "$40.00"
+    },
+    {
+        "id": "s_09",
+        "toy_number": "#733",
+        "color": "Cream with white chest and bright green eyes",
+        "toy_type": "Shorthair Cat",
+        "publication_year": 2008,
+        "generation": "Generation 2",
+        "price": "$45.00"
+    },
+    {
+        "id": "s_10",
+        "toy_number": "#790",
+        "color": "Ginger orange with yellow stripes and teal teardrop eyes",
+        "toy_type": "Shorthair Cat",
+        "publication_year": 2008,
+        "generation": "Generation 2",
+        "price": "$40.00"
+    },
+    {
+        "id": "s_11",
+        "toy_number": "#886",
+        "color": "Tan with chocolate brown tabby stripes and blue eyes",
+        "toy_type": "Shorthair Cat",
+        "publication_year": 2009,
+        "generation": "Generation 2",
+        "price": "$50.00"
+    },
+    {
+        "id": "s_12",
+        "toy_number": "#994",
+        "color": "Cream and blonde tabby with dark blue eyes",
+        "toy_type": "Shorthair Cat",
+        "publication_year": 2009,
+        "generation": "Generation 2",
+        "price": "$110.00"
+    },
+    {
+        "id": "s_13",
+        "toy_number": "#1170",
+        "color": "Light brown with dark brown striped bangs and green eyes",
+        "toy_type": "Shorthair Cat",
+        "publication_year": 2009,
+        "generation": "Generation 2",
+        "price": "$55.00"
+    },
+    {
+        "id": "s_14",
+        "toy_number": "#1451",
+        "color": "Soft yellow-cream with blue eyes",
+        "toy_type": "Angora Cat",
+        "publication_year": 2010,
+        "generation": "Generation 2",
+        "price": "$15.00"
+    },
+    {
+        "id": "s_15",
+        "toy_number": "#2249",
+        "color": "Jet black with white chest patch and mint green eyes",
+        "toy_type": "Shorthair Cat",
+        "publication_year": 2011,
+        "generation": "Generation 2",
+        "price": "$160.00"
+    },
+    {
+        "id": "s_656",
+        "toy_number": "cc",
+        "color": "cc",
+        "toy_type": "cc",
+        "publication_year": "cc",
+        "generation": "cc",
+        "price": "cc"
+    }
+]
+
+```
+
+
+
+``` php
+$myfuckingballs = __DIR__ . '/cats.json';
+
+App::delete('/cats/$id', function ($id) use ($myfuckingballs) {
+    // REMOVE THIS LINE: $id = $_GET['id'];
+    
+    // The $id parameter passed into this function already contains your ID from the URL!
+    $cats = json_decode(file_get_contents($myfuckingballs), true);
+    $filtCats = array_filter($cats, fn($c) => $c['id'] != $id);
+    file_put_contents($myfuckingballs, json_encode(array_values($filtCats), JSON_PRETTY_PRINT)); 
+});
 ```
