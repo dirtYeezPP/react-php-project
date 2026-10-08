@@ -1,29 +1,29 @@
 [
     {
         "id": "s_03",
-        "toy_number": "#138",
-        "color": "Grey and white with blue eyes",
-        "toy_type": "Shorthair Cat",
-        "publication_year": 2005,
-        "generation": "Generation 2",
-        "price": "$30.00"
+        "toy_number": "#271",
+        "color": "Pastel_pink_with_purple_eyes",
+        "toy_type": "Persian_Cat",
+        "publication_year": "2006",
+        "generation": "Generation_2",
+        "price": "$10.00"
     },
     {
         "id": "s_04",
-        "toy_number": "#143",
-        "color": "White with light brown calico patches and blue eyes",
-        "toy_type": "Persian Cat",
-        "publication_year": 2005,
-        "generation": "Generation 2",
-        "price": "$12.00"
+        "toy_number": "#271",
+        "color": "Pastel_pink_with_purple_eyes",
+        "toy_type": "Persian_Cat",
+        "publication_year": "2006",
+        "generation": "Generation_2",
+        "price": "$10.00"
     },
     {
         "id": "s_05",
         "toy_number": "#271",
-        "color": "Pastel pink with purple eyes",
-        "toy_type": "Persian Cat",
-        "publication_year": 2006,
-        "generation": "Generation 2",
+        "color": "Pastel_pink_with_purple_eyes",
+        "toy_type": "Persian_C",
+        "publication_year": "2006",
+        "generation": "Generation_2",
         "price": "$10.00"
     },
     {

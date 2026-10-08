@@ -552,3 +552,42 @@ App::delete('/cats/$id', function ($id) use ($myfuckingballs) {
     file_put_contents($myfuckingballs, json_encode(array_values($filtCats), JSON_PRETTY_PRINT)); 
 });
 ```
+
+## stolen code from freddy previous 
+``` php
+public static function updateCar($data){
+        $cars = self::getCars();
+        if(empty($data['id'])) return "no_id";
+
+        $id = $data['id'];
+
+        $index = -1;
+        foreach($cars as $key=>$car){
+            if($car['id'] == $id) $index = $key;
+            break;
+        }
+
+        if($index>-1){
+            $cars[$index]['brand'] = !empty(trim($data['brand'])) ? $data['brand'] : $cars[$index]['brand'];
+            $cars[$index]['model'] = !empty(trim($data['model'])) ? $data['model'] : $cars[$index]['model'];
+            $cars[$index]['price'] = !empty(trim($data['price'])) ? $data['price'] : $cars[$index]['price'];
+          
+            self::saveCars($cars);
+        }
+}
+
+
+    return (
+        <div className="cform">
+            <form action="" onSubmit={createProd} method="post">
+                <input type="text" name="toy_number" placeholder="toy number" />
+                <input type="text" name="color" placeholder="color" />
+                <input type="text" name="toy_type" placeholder="toy type" />
+                <input type="text" name="publication_year" placeholder="publication year" />
+                <input type="text" name="generation" placeholder="generation? " />
+                <input type="text" name="price" placeholder="price" />
+                <input type="submit" value="CREATE" />
+            </form>
+        </div>
+    )
+```

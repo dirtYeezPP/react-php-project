@@ -31,7 +31,32 @@ App::post("/cats", function () use ($myfuckingballs) {
 });
 
 App::put("/cats", function () use ($myfuckingballs) {
-    
+    header('Content-Type: application/json');
+    $uCat = json_decode(file_get_contents('php://input'), true);
+    $id = $uCat['id'];
+
+    $fileData = file_get_contents($myfuckingballs);
+    $cats = $fileData ? json_decode($fileData, true) : [];
+
+    $index = -1;  
+    foreach($cats as $key=>$cat){
+        if($cat['id'] == $id) {
+            $index = $key; 
+            break; 
+        }
+    }
+
+    if($index>-1){
+        $cats[$index]['toy_number'] = !empty(trim($uCat['toy_number'])) ? $uCat['toy_number'] : $cats[$index]['toy_number'];
+        $cats[$index]['color'] = !empty(trim($uCat['color'])) ? $uCat['color'] : $cats[$index]['color'];
+        $cats[$index]['toy_type'] = !empty(trim($uCat['toy_type'])) ? $uCat['toy_type'] : $cats[$index]['toy_type'];
+        $cats[$index]['publication_year'] = !empty(trim($uCat['publication_year'])) ? $uCat['publication_year'] : $cats[$index]['publication_year'];
+        $cats[$index]['generation'] = !empty(trim($uCat['generation'])) ? $uCat['generation'] : $cats[$index]['generation'];
+        $cats[$index]['price'] = !empty(trim($uCat['price'])) ? $uCat['price'] : $cats[$index]['price'];
+
+        file_put_contents($myfuckingballs, json_encode($cats, JSON_PRETTY_PRINT));
+    }
+
 });
 
 App::delete('/cats/$id', function ($id) use ($myfuckingballs) {
