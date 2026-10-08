@@ -106,5 +106,14 @@
         "publication_year": 2011,
         "generation": "Generation 2",
         "price": "$160.00"
+    },
+    {
+        "id": "s_285",
+        "toy_number": "ccc",
+        "color": "cccccccccc",
+        "toy_type": "ccccccccccc",
+        "publication_year": "ccccccccccccccccccccccccccc",
+        "generation": "ccccccccc",
+        "price": "cccccccccc"
     }
 ]

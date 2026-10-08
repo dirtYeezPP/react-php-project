@@ -10,9 +10,7 @@ function Prod({ prod, setProds }) {
     function deleteProd() {
         const id = prod.id 
         fetch('/cats/'+id,
-            { method: "DELETE",
-                // body: JSON.stringify(id)
-            })
+            { method: "DELETE"})
         setProds(_ => _.filter(p => p.id != id))
     }
 

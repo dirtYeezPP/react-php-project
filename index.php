@@ -31,9 +31,7 @@ App::post("/cats", function () use ($myfuckingballs) {
 });
 
 App::put("/cats", function () use ($myfuckingballs) {
-    $fileData = file_get_contents($myfuckingballs); 
-    $cats = $fileData ? json_decode($fileData, true) : []; 
-
+    
 });
 
 App::delete('/cats/$id', function ($id) use ($myfuckingballs) {
