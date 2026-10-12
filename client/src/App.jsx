@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import Products from "./components/products";
 import Create from "./components/create";
-import Login from "./components/login";
+import LoginReg from "./components/loginReg";
 
 function App() {
 
   const [products, setProds] = useState([]);
+  const [users, setUsers] = useState([]); 
 
   useEffect(_ => { getData() }, []);
 
@@ -15,9 +16,17 @@ function App() {
     setProds(_ => data);
   }
 
+  useEffect(_=>{getUserData()}, []); 
+
+  async function getUserData(){
+    const resu = await fetch("/users");
+    const Udata = await resu.json();
+    setUsers(_=>Udata); 
+  }
+
   return (
     <>
-      <Login></Login>
+      <LoginReg></LoginReg>
       <Create setProds={setProds} ></Create>
       <Products products={products} setProds={setProds}></Products>
     </>

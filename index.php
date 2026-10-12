@@ -7,6 +7,7 @@ session_start(['cookie_httponly' => true, 'cookie_samesite' => 'Lax']);
 
 require_once("router.php");
 $myfuckingballs = __DIR__ . '/cats.json';
+$mysecondbal = __DIR__ . '/users.json'; 
 
 // if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     // exit;}
@@ -64,4 +65,21 @@ App::delete('/cats/$id', function ($id) use ($myfuckingballs) {
     $cats = json_decode(file_get_contents($myfuckingballs), true);
     $filtCats = array_filter($cats, fn($c) => $c['id'] != $id);
     file_put_contents($myfuckingballs, json_encode(array_values($filtCats), JSON_PRETTY_PRINT)); 
+});
+
+// auth 
+
+App::post("/reg", function() use($mysecondbal) {
+    $newUser = json_decode(file_get_contents('php://input'), true);
+
+    // Fallback in case the file is empty or broken
+    $fileData = file_get_contents($mysecondbal);
+    $users = $fileData ? json_decode($fileData, true) : [];
+
+    $users[] = $newUser;
+    file_put_contents($mysecondbal, json_encode($users, JSON_PRETTY_PRINT));
+});
+
+App::post("/login", function(){
+
 });

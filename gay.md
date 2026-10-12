@@ -591,3 +591,141 @@ public static function updateCar($data){
         </div>
     )
 ```
+
+
+``` php
+<?php
+require_once("users_model.php");
+
+class Auth{
+
+
+    public static function register($user){
+
+        $users = Users::getUsers();
+
+        if(isset($users[$user['email']])) return ["error"=>"User Exists"];
+
+        $user['id'] = uniqid(true);
+        $user["password"] = password_hash($user["password"], PASSWORD_DEFAULT,["cost"=>12]);
+        
+        // Lägg till i users
+        $users[$user['email']] = $user;
+
+        Users::saveUsers($users);
+        return ["success"=>true];
+
+    }
+    public static function login($user){
+
+        $users = Users::getUsers();
+
+        if(empty($users[$user['email']])){
+            throw new Exception("Bad Credentials");
+        }
+
+        $dbUser = $users[$user['email']];
+
+        if(!password_verify($user['password'], $dbUser['password']))
+            throw new Exception("Bad Credentials pw");
+
+        // Fixa session
+        $_SESSION["userId"] = $dbUser['id'];
+        $_SESSION["email"] = $dbUser['email'];
+        $_SESSION["role"] = $dbUser['role'];
+
+        return "Login Succes";
+
+
+
+    }
+    public static function logout(){}
+
+    public static function checkAuth(){
+
+        if(!empty($_SESSION['userId'])){
+            return true;
+        }
+
+        return false;
+
+    }
+
+
+
+}
+```
+
+``` php
+session_set_cookie_params([
+    'httponly' => true
+]);
+/* ini_set("session.cookie_httponly",1); */
+session_start();
+
+require_once("router.php");
+require_once("cars_model.php");
+require_once("response.php");
+require_once("auth.php");
+
+app::get("/session", function () {
+
+    var_dump($_SESSION);
+});
+
+
+app::get("/register", "html/register");
+app::post("/register", function () {
+
+    $email = $_POST['email'] ?? "";
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        Res::redirect("/register?error=email error");
+        return;
+    }
+    $password = $_POST['password'] ?? "";
+    if (strlen($password) < 8) {
+        Res::redirect("/register?error=Password must be at least 8 char long");
+        return;
+    }
+    $user = [
+        "role" => "user",
+        "email" => $email,
+        "password" => $password
+    ];
+
+    $regReturn = Auth::register($user);
+    if (isset($regReturn['error'])) {
+        return  Res::redirect("/login?error=" . $regReturn['error']);
+    }
+
+    Res::redirect("/login?message=Please Login");
+});
+
+
+app::post("/login", function () {
+
+    try {
+        $loginReturn = Auth::login($_POST);
+        Res::redirect("/cars?message=$loginReturn");
+    } catch (Exception $e) {
+        Res::redirect("/login?error=" . $e->getMessage());
+    }
+});
+
+app::get("/login", "html/login");
+```
+
+
+``` php
+class Users
+{
+    public static function getUsers()
+    {
+        $users = json_decode(file_get_contents("users.json"), true);
+        return $users;
+    }
+    public static function saveUsers($users){
+        file_put_contents("users.json", json_encode($users, JSON_PRETTY_PRINT));
+    }
+}
+```
