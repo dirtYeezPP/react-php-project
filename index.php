@@ -69,8 +69,11 @@ App::delete('/cats/$id', function ($id) use ($myfuckingballs) {
 
 // auth 
 
-App::post("/reg", function() use($mysecondbal) {
+App::post("/user", function() use($mysecondbal) {
     $newUser = json_decode(file_get_contents('php://input'), true);
+    $password = $newUser['password']; 
+    $shh = password_hash($password, 12); 
+    $newUser['password'] = $shh; 
 
     // Fallback in case the file is empty or broken
     $fileData = file_get_contents($mysecondbal);

@@ -1,10 +1,8 @@
-import { useState } from "react";
 
+function createUser({ setUsers }) {
 
-function LoginReg({ setUsers }) {
-
-    function createUser(event) {
-        event.preventDefault();
+    function addUser(event) {
+        event.preventDefault()
         const newUser = {
             id: "su_" + Math.floor(Math.random() * 1000),
             nickname: event.target.nickname.value,
@@ -17,24 +15,25 @@ function LoginReg({ setUsers }) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(newUser)
         })
+        setUsers(prev=>[...prev, newUser]); 
     }
 
     // function compareUsers(){}
 
     return (
-        <div className="login">
+        <div className="createUserDiv">
             <div className="img">
                 <img src="../images/sonion.jpg" alt="" />
             </div>
-            <form action="" onSubmit={Logogog} method="post">
+            <form action="" onSubmit={addUser} method="post">
                 <input type="text" name="nickname" placeholder="nickname" />
                 <input type="email" name="email" placeholder="email" />
                 <input type="password" name="password" placeholder="password" />
-                <input type="submit" value="LOGIN" />
+                <input type="submit" value="CREATEUSER" />
             </form>
         </div>
     )
 
 }
 
-export default LoginReg; 
+export default createUser; 

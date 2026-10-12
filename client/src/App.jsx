@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Products from "./components/products";
 import Create from "./components/create";
-import LoginReg from "./components/loginReg";
+import createUser from "./components/createUser";
 
 function App() {
 
@@ -26,7 +26,7 @@ function App() {
 
   return (
     <>
-      <LoginReg></LoginReg>
+      <createUser setUsers={setUsers}></createUser>
       <Create setProds={setProds} ></Create>
       <Products products={products} setProds={setProds}></Products>
     </>
