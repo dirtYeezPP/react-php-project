@@ -90,21 +90,12 @@
         "price": "$110.00"
     },
     {
-        "id": "s_14",
-        "toy_number": "#1451",
-        "color": "Soft yellow-cream with blue eyes",
-        "toy_type": "Angora Cat",
-        "publication_year": 2010,
-        "generation": "Generation 2",
-        "price": "$15.00"
-    },
-    {
         "id": "s_15",
         "toy_number": "#2249",
-        "color": "Jet black with white chest patch and mint green eyes",
-        "toy_type": "Shorthair Cat",
-        "publication_year": 2011,
-        "generation": "Generation 2",
+        "color": "Jet_black_with_white_chest_patch_and_mint_green_eyes",
+        "toy_type": "Shorthair_C",
+        "publication_year": "2011",
+        "generation": "Generation_2",
         "price": "$160.00"
     },
     {
@@ -115,5 +106,14 @@
         "publication_year": "ccccccccccccccccccccccccccc",
         "generation": "ccccccccc",
         "price": "cccccccccc"
+    },
+    {
+        "id": "s_948",
+        "toy_number": "dddd",
+        "color": "ddd",
+        "toy_type": "dd",
+        "publication_year": "dddddddddddd",
+        "generation": "dddddddddddd",
+        "price": "dddddddd"
     }
 ]

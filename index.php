@@ -8,9 +8,8 @@ session_start(['cookie_httponly' => true, 'cookie_samesite' => 'Lax']);
 require_once("router.php");
 $myfuckingballs = __DIR__ . '/cats.json';
 
-if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-    exit;
-}
+// if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+    // exit;}
 
 App::get("/", function () {
     include("./client/dist/index.html");
