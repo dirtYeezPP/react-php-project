@@ -4,8 +4,8 @@ function createUser({ setUsers }) {
     function addUser(event) {
         event.preventDefault()
         const newUser = {
-            id: "su_" + Math.floor(Math.random() * 1000),
-            nickname: event.target.nickname.value,
+            // id: "su_" + Math.floor(Math.random() * 1000),
+            username: event.target.username.value,
             email: event.target.email.value,
             password: event.target.password.value
         }
@@ -26,7 +26,7 @@ function createUser({ setUsers }) {
                 <img src="../images/sonion.jpg" alt="" />
             </div>
             <form action="" onSubmit={addUser} method="post">
-                <input type="text" name="nickname" placeholder="nickname" />
+                <input type="text" name="username" placeholder="username" />
                 <input type="email" name="email" placeholder="email" />
                 <input type="password" name="password" placeholder="password" />
                 <input type="submit" value="CREATEUSER" />

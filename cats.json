@@ -115,5 +115,14 @@
         "publication_year": "dddddddddddd",
         "generation": "dddddddddddd",
         "price": "dddddddd"
+    },
+    {
+        "toy_number": "cccccccc",
+        "color": "cccccccccccccc",
+        "toy_type": "cccccccccccccccc",
+        "publication_year": "cccccccccccccccc",
+        "generation": "ccccccccccccccc",
+        "price": "cccccccccc",
+        "id": "s_6acf244a291a2"
     }
 ]

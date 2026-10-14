@@ -729,3 +729,527 @@ class Users
     }
 }
 ```
+
+
+## FREDDY VERKTYG 
+Verktyg som låter oss skicka uhm whatever
+postman 
+
+postman alt in vs code  söker han 
+bruno
+insonia? whatver he said
+
+det som är bra med postman är att han har använt den innan...
+postman är 
+man kan installera den för windows yes 
+en färdig client som är byggd för att kunna skicka HTTP anrop 
+den funkar för att ta emot json men också exempelvis html 
+det enda du behöve rär ett google konto. 
+
+plus 
+vi vill ha en vanlig request
+untitled kan namnges och kan välja de olika http metoderna. 
+
+send post data 
+var skickar han den? kolla i koden yes 
+
+testa route 
+skapa honom en i postman klistra in url och datan kommer dit 
+och dör står det html 
+men han vill inte ha html 
+de hans react applikation, det vid startsidan
+webbläsaren försöker byga men postman visar bara koden
+han vill gp till /cars 
+send 
+så ser datan ut 
+och han får status koder headers och allt sånt. 
+
+han kan också testa post men han skickade ingen data. 
+
+
+## BACK TO WORK 
+``` php
+
+post("/auth/register", function () use ($pdo){
+
+    $hashedPassword = password_hash($_POST['password'], PASSWORD_DEFAULT);
+
+    $requested = [
+        "username"=>$_POST['username'],
+        "email" => $_POST['email'],
+        "hashedPassword" => $hashedPassword
+    ];
+
+    $checksql = "SELECT * FROM users WHERE email = :email";
+    $checkStmt = $pdo->prepare($checksql);
+    $checkStmt->execute(['email' => $requested['email']]);
+
+    $emailExists = $checkStmt->fetchColumn()>0;
+
+    if($emailExists){
+        redirect("errors/ERR_INCORRECT_DATA");
+    }
+
+    $sql = "INSERT INTO users (name, email, hashedPassword) VALUES ( :username, :email, :hashedPassword)";
+    $pdo->prepare($sql)->execute($requested);
+
+    redirect("auth/login");
+
+});
+
+
+post("/auth/login", function() use ($pdo) {
+
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+
+    $sql = "SELECT * FROM users WHERE email = :email";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(['email' => $email]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if($user && password_verify($password, $user['hashedPassword'])){
+        $_SESSION['id'] = $user['id'];
+        $_SESSION['name'] = $user['name'];
+
+        redirect("cats");
+
+    } else {
+        redirect("errors/ERR_INCORRECT_DATA");
+    }
+});
+
+```
+
+
+``` php 
+App::post("/user", function () use ($mysecondbal) {
+    header('Content-Type: application/json');
+
+    // 1. Parse incoming JSON
+    $body = json_decode(file_get_contents('php://input'), true);
+    $email = trim($body['email'] ?? '');
+    $password = $body['password'] ?? '';
+    $username = trim($body['username'] ?? '');
+
+    if (empty($email) || empty($password)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Email and password are required.']);
+        return;
+    }
+
+    // 2. Read existing users
+    $fileData = file_exists($mysecondbal) ? file_get_contents($mysecondbal) : '';
+    $users = $fileData ? json_decode($fileData, true) : [];
+
+    // 3. Search for existing user
+    $existingUser = null;
+    foreach ($users as $user) {
+        if (strtolower($user['email']) === strtolower($email)) {
+            $existingUser = $user;
+            break;
+        }
+    }
+
+    // --- CASE A: User exists -> Log them in ---
+    if ($existingUser) {
+        if (password_verify($password, $existingUser['password'])) {
+            $_SESSION['id'] = $existingUser['uId'];
+            $_SESSION['name'] = $existingUser['username'];
+
+            echo json_encode([
+                'status' => 'logged_in',
+                'user' => ['id' => $existingUser['uId'], 'name' => $existingUser['username']]
+            ]);
+            return;
+        }
+
+        http_response_code(401);
+        echo json_encode(['error' => 'Incorrect password for this account.']);
+        return;
+    }
+
+    // --- CASE B: User does not exist -> Register them ---
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+    $newUserRecord = [
+        'uId'      => 's_' . uniqid(),
+        'username' => $username ?: explode('@', $email)[0],
+        'email'    => $email,
+        'password' => $hashedPassword
+    ];
+
+    $users[] = $newUserRecord;
+    file_put_contents($mysecondbal, json_encode($users, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+
+    $_SESSION['id'] = $newUserRecord['uId'];
+    $_SESSION['name'] = $newUserRecord['username'];
+
+    http_response_code(201);
+    echo json_encode([
+        'status' => 'registered',
+        'user' => ['id' => $newUserRecord['uId'], 'name' => $newUserRecord['username']]
+    ]);
+});
+```
+
+``` js
+const handleAuth = async () => {
+  const res = await fetch("/user", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password, username })
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    alert(data.error);
+    return;
+  }
+
+  // React router navigation
+  navigate("/");
+}; 
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+``` php
+App::post("/user", function () use ($mysecondbal) {
+    header('Content-Type: application/json');
+
+    $raw = file_get_contents('php://input');
+    $newUser = json_decode($raw, true);
+
+    if (empty($newUser['email']) || empty($newUser['password'])) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Missing email or password']);
+        exit;
+    }
+
+    $fileData = file_get_contents($mysecondbal);
+    $users = $fileData ? json_decode($fileData, true) : [];
+
+    // Check if the user already exists
+    foreach ($users as $user) {
+        if ($user['email'] === $newUser['email']) {
+            if (password_verify($newUser['password'], $user['password'])) {
+                if (session_status() === PHP_SESSION_NONE) {
+                    session_start();
+                }
+                $_SESSION['id'] = $user['uId'];
+                $_SESSION['name'] = $user['username'];
+
+                http_response_code(200);
+                echo json_encode([
+                    'action' => 'login',
+                    'user' => [
+                        'uId' => $user['uId'],
+                        'username' => $user['username'],
+                        'email' => $user['email']
+                    ]
+                ]);
+            } else {
+                http_response_code(401);
+                echo json_encode(['error' => 'Incorrect password for existing account']);
+            }
+            exit; // Stop execution here so we don't register them again
+        }
+    }
+
+    // Email was not found -> proceed with registration
+    $createdUser = [
+        'uId' => 's_' . uniqid(),
+        'username' => $newUser['username'] ?? '',
+        'email' => $newUser['email'],
+        'password' => password_hash($newUser['password'], PASSWORD_DEFAULT)
+    ];
+
+    $users[] = $createdUser;
+    file_put_contents($mysecondbal, json_encode($users, JSON_PRETTY_PRINT));
+
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+    $_SESSION['id'] = $createdUser['uId'];
+    $_SESSION['name'] = $createdUser['username'];
+
+    http_response_code(201);
+    echo json_encode([
+        'action' => 'register',
+        'user' => [
+            'uId' => $createdUser['uId'],
+            'username' => $createdUser['username'],
+            'email' => $createdUser['email']
+        ]
+    ]);
+    exit;
+});
+```
+
+``` js
+import { useState } from "react";
+
+function CreateUser({ setUsers }) {
+    const [error, setError] = useState(null);
+
+    async function handleSubmit(event) {
+        event.preventDefault();
+        setError(null);
+
+        const payload = {
+            username: event.target.username.value,
+            email: event.target.email.value,
+            password: event.target.password.value
+        };
+
+        try {
+            const res = await fetch("/user", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                setError(data.error || "Something went wrong");
+                return;
+            }
+
+            if (data.action === "register") {
+                // Store only the safe public user info returned by the server
+                setUsers(prev => [...prev, data.user]);
+            }
+
+            // Redirect the user on the frontend
+            window.location.href = "/";
+        } catch (err) {
+            setError("Network error. Please try again.");
+        }
+    }
+
+    return (
+        <div className="createUserDiv">
+            <div className="img">
+                <img src="../images/sonion.jpg" alt="" />
+            </div>
+            {error && <p className="error" style={{ color: "red" }}>{error}</p>}
+            <form onSubmit={handleSubmit}>
+                <input type="text" name="username" placeholder="username" />
+                <input type="email" name="email" placeholder="email" required />
+                <input type="password" name="password" placeholder="password" required />
+                <input type="submit" value="SUBMIT" />
+            </form>
+        </div>
+    );
+}
+
+export default CreateUser;
+```
+
+
+``` php
+get('/errors/$errorCode', function($errorCode) use($renderer){
+    echo $renderer->renderFile('/errors.pug', ['errorCode' => $errorCode]);
+});
+```
+
+
+
+
+
+
+
+
+
+``` php
+App::post("/user", function () use ($mysecondbal) {
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    $rawInput = file_get_contents('php://input');
+    $newUser = json_decode($rawInput, true);
+
+    if (empty($newUser['email']) || empty($newUser['password'])) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Email and password are required.']);
+        return;
+    }
+
+    $fileData = file_exists($mysecondbal) ? file_get_contents($mysecondbal) : '';
+    $users = $fileData ? json_decode($fileData, true) : [];
+    if (!is_array($users)) {
+        $users = [];
+    }
+
+    // 1. Check if user already exists -> Login logic
+    foreach ($users as $user) {
+        if (strcasecmp($user['email'], $newUser['email']) === 0) {
+            if (password_verify($newUser['password'], $user['password'])) {
+                $_SESSION['id'] = $user['uId']; // Fixed key: uId
+                $_SESSION['name'] = $user['username'];
+
+                http_response_code(200);
+                echo json_encode([
+                    'success' => true,
+                    'action' => 'login',
+                    'user' => ['username' => $user['username'], 'email' => $user['email']]
+                ]);
+                return; // Stop execution
+            } else {
+                http_response_code(401);
+                echo json_encode(['error' => 'Incorrect password.']);
+                return; // Stop execution
+            }
+        }
+    }
+
+    // 2. User does not exist -> Registration logic
+    $req = [
+        'username' => $newUser['username'] ?? '',
+        'email' => $newUser['email'],
+        'password' => password_hash($newUser['password'], PASSWORD_DEFAULT),
+        'uId' => 's_' . uniqid()
+    ];
+
+    $users[] = $req;
+    file_put_contents($mysecondbal, json_encode($users, JSON_PRETTY_PRINT));
+
+    // Log the user into session immediately upon creation
+    $_SESSION['id'] = $req['uId'];
+    $_SESSION['name'] = $req['username'];
+
+    http_response_code(201);
+    echo json_encode([
+        'success' => true,
+        'action' => 'registered',
+        'user' => ['username' => $req['username'], 'email' => $req['email']]
+    ]);
+});
+```
+
+``` js 
+import React, { useState } from 'react';
+
+function CreateUser({ setUsers }) {
+    const [errorMessage, setErrorMessage] = useState(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    async function handleAuth(event) {
+        event.preventDefault();
+        setErrorMessage(null);
+        setIsSubmitting(true);
+
+        const payload = {
+            username: event.target.username.value,
+            email: event.target.email.value,
+            password: event.target.password.value
+        };
+
+        try {
+            const response = await fetch("/user", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                setErrorMessage(data.error || "Authentication failed.");
+                setIsSubmitting(false);
+                return;
+            }
+
+            // Only add to client list if a new record was actually registered
+            if (data.action === "registered" && setUsers) {
+                setUsers(prev => [...prev, data.user]);
+            }
+
+            // Navigate to home after setting the server session
+            window.location.href = "/";
+        } catch (err) {
+            setErrorMessage("Network error. Please try again later.");
+            setIsSubmitting(false);
+        }
+    }
+
+    return (
+        <div className="createUserDiv">
+            <div className="img">
+                <img src="../images/sonion.jpg" alt="" />
+            </div>
+
+            {errorMessage && (
+                <div style={{ color: "red", marginBottom: "10px" }}>
+                    {errorMessage}
+                </div>
+            )}
+
+            <form onSubmit={handleAuth}>
+                <input type="text" name="username" placeholder="Username (for new users)" />
+                <input type="email" name="email" placeholder="Email" required />
+                <input type="password" name="password" placeholder="Password" required />
+                <input 
+                    type="submit" 
+                    value={isSubmitting ? "Processing..." : "Continue"} 
+                    disabled={isSubmitting} 
+                />
+            </form>
+        </div>
+    );
+}
+
+export default CreateUser;
+```
+
+
+
+
+
+
+## UTKAST 
+``` php
+    $newUser = json_decode(file_get_contents('php://input'), true);
+    $hashed = password_hash($newUser['password'], PASSWORD_DEFAULT); 
+
+    // Fallback in case the file is empty or broken
+    $fileData = file_get_contents($mysecondbal);
+    $users = $fileData ? json_decode($fileData, true) : [];
+
+    $req = [
+        'username'=>$newUser['username'],
+        'email'=>$newUser['email'],
+        'password'=>$hashed,
+        'uId'=>'s_'.uniqid()
+    ]; 
+
+    foreach($users as $user){
+        if ($user['email'] == $req['email']){
+            if($user && password_verify($newUser['password'], $user['password'])){
+                $_SESSION['id'] = $user['id'];
+                $_SESSION['name'] = $user['username']; 
+                Res::redirect("/");
+            } else {
+                Res::redirect("errors/ERR_INCORRECT_DATA"); 
+            }
+        }
+    }
+
+    $users[] = $req;
+    file_put_contents($mysecondbal, json_encode($users, JSON_PRETTY_PRINT));
+```
+
