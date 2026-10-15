@@ -3,15 +3,12 @@ header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0", true);
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache", true);
 
-session_start(['cookie_httponly' => true, 'cookie_samesite' => 'Lax']);
+// session_start(['cookie_httponly' => true, 'cookie_samesite' => 'Lax']);
 
 require_once("router.php");
 require_once("helper.php"); 
 $myfuckingballs = __DIR__ . '/cats.json';
 $mysecondbal = __DIR__ . '/users.json';
-
-// if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-// exit;}
 
 App::get("/", function () {
     include("./client/dist/index.html");
@@ -26,7 +23,6 @@ App::post("/cats", function () use ($myfuckingballs) {
     $newCat = json_decode(file_get_contents('php://input'), true);
     $newCat['id'] = "s_" . uniqid();
 
-    // Fallback in case the file is empty or broken
     $fileData = file_get_contents($myfuckingballs);
     $cats = $fileData ? json_decode($fileData, true) : [];
 
